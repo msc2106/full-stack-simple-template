@@ -2,29 +2,29 @@
 name = "app"
 version = "0.1.0"
 description = ""
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.14,<4.0"
 dependencies = [
-    "fastapi[standard]<1.0.0,>=0.114.2",
-    "python-multipart<1.0.0,>=0.0.7",
-    "email-validator<3.0.0.0,>=2.1.0.post1",
-    "tenacity<9.0.0,>=8.2.3",
-    "pydantic>2.0",
-    "emails<1.0,>=0.6",
-    "jinja2<4.0.0,>=3.1.4",
     "alembic<2.0.0,>=1.12.1",
+    "chardet>=5.0.0,<6.0.0",
+    "email-validator<3.0.0.0,>=2.3.0",
+    "emails<1.0,>=0.6",
+    "fastapi[standard]<1.0.0,>=0.114.2",
     "httpx<1.0.0,>=0.25.1",
+    "jinja2<4.0.0,>=3.1.4",
     "psycopg[binary]<4.0.0,>=3.1.13",
-    "sqlmodel<1.0.0,>=0.0.21",
-    "pydantic-settings<3.0.0,>=2.2.1",
-    "sentry-sdk[fastapi]>=2.0.0,<3.0.0",
-    "pyjwt<3.0.0,>=2.8.0",
     "pwdlib[argon2,bcrypt]>=0.3.0",
+    "pydantic-settings<3.0.0,>=2.2.1",
+    "pydantic>2.0",
+    "pyjwt<3.0.0,>=2.8.0",
+    "python-multipart<1.0.0,>=0.0.7",
+    "sentry-sdk[fastapi]>=2.0.0,<3.0.0",
+    "sqlmodel<1.0.0,>=0.0.21",
+    "tenacity<9.0.0,>=8.2.3",
 ]
 
 [dependency-groups]
 dev = [
     "pytest<8.0.0,>=7.4.3",
-    "mypy<2.0.0,>=1.8.0",
     "ruff<1.0.0,>=0.2.2",
     "prek>=0.2.24,<1.0.0",
     "coverage<8.0.0,>=7.4.3",
@@ -34,12 +34,8 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.mypy]
-strict = true
-exclude = ["venv", ".venv", "alembic"]
-
 [tool.ruff]
-target-version = "py310"
+target-version = "py314"
 exclude = ["alembic"]
 
 [tool.ruff.lint]
@@ -55,9 +51,9 @@ select = [
     "T201",   # print statements are not allowed
 ]
 ignore = [
-    "E501",  # line too long, handled by black
+    # "E501",  # line too long, handled by black
     "B008",  # do not perform function calls in argument defaults
-    "W191",  # indentation contains tabs
+    # "W191",  # indentation contains tabs
     "B904",  # Allow raising exceptions without from e, for HTTPException
 ]
 

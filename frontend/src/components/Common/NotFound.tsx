@@ -1,31 +1,44 @@
-import { Link } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import { Button, Center, Flex, Text } from "@chakra-ui/react";
+import { Link } from "@tanstack/react-router";
 
 const NotFound = () => {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center flex-col p-4"
+    <Flex
+      height="100vh"
+      align="center"
+      justify="center"
+      flexDir="column"
       data-testid="not-found"
+      p={4}
     >
-      <div className="flex items-center z-10">
-        <div className="flex flex-col ml-4 items-center justify-center p-4">
-          <span className="text-6xl md:text-8xl font-bold leading-none mb-4">
+      <Flex alignItems="center" zIndex={1}>
+        <Flex flexDir="column" ml={4} align="center" justify="center" p={4}>
+          <Text
+            fontSize={{ base: "6xl", md: "8xl" }}
+            fontWeight="bold"
+            lineHeight="1"
+            mb={4}
+          >
             404
-          </span>
-          <span className="text-2xl font-bold mb-2">Oops!</span>
-        </div>
-      </div>
+          </Text>
+          <Text fontSize="2xl" fontWeight="bold" mb={2}>
+            Oops!
+          </Text>
+        </Flex>
+      </Flex>
 
-      <p className="text-lg text-muted-foreground mb-4 text-center z-10">
+      <Text fontSize="lg" color="gray.600" mb={4} textAlign="center" zIndex={1}>
         The page you are looking for was not found.
-      </p>
-      <div className="z-10">
+      </Text>
+      <Center zIndex={1}>
         <Link to="/">
-          <Button className="mt-4">Go Back</Button>
+          <Button variant="solid" colorScheme="teal" mt={4} alignSelf="center">
+            Go Back
+          </Button>
         </Link>
-      </div>
-    </div>
-  )
-}
+      </Center>
+    </Flex>
+  );
+};
 
-export default NotFound
+export default NotFound;

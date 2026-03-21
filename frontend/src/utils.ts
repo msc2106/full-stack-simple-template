@@ -1,31 +1,63 @@
-import { AxiosError } from "axios"
-import type { ApiError } from "./client"
+import type { AxiosError } from "axios";
+import useCustomToast from "./hooks/useCustomToast";
 
-function extractErrorMessage(err: ApiError): string {
-  if (err instanceof AxiosError) {
-    return err.message
+interface ErrorResponse {
+  detail?: any;
+}
+
+export const emailPattern = {
+  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+  message: "Invalid email address",
+};
+
+export const namePattern = {
+  value: /^[A-Za-z\s\u00C0-\u017F]{1,30}$/,
+  message: "Invalid name",
+};
+
+export const passwordRules = (isRequired = true) => {
+  const rules: any = {
+    minLength: {
+      value: 8,
+      message: "Password must be at least 8 characters",
+    },
+  };
+
+  if (isRequired) {
+    rules.required = "Password is required";
   }
 
-  const errDetail = (err.body as any)?.detail
+  return rules;
+};
+
+export const confirmPasswordRules = (
+  getValues: () => any,
+  isRequired = true,
+) => {
+  const rules: any = {
+    validate: (value: string) => {
+      const password = getValues().password || getValues().new_password;
+      return value === password ? true : "The passwords do not match";
+    },
+  };
+
+  if (isRequired) {
+    rules.required = "Password confirmation is required";
+  }
+
+  return rules;
+};
+
+export const handleError = (err: AxiosError) => {
+  const { showErrorToast } = useCustomToast();
+  const errContent = err.response?.data as ErrorResponse;
+  const errDetail = errContent?.detail;
+  let errorMessage =
+    errDetail && typeof errDetail === "string"
+      ? errDetail
+      : "Something went wrong.";
   if (Array.isArray(errDetail) && errDetail.length > 0) {
-    return errDetail[0].msg
+    errorMessage = errDetail[0].msg;
   }
-  return errDetail || "Something went wrong."
-}
-
-export const handleError = function (
-  this: (msg: string) => void,
-  err: ApiError,
-) {
-  const errorMessage = extractErrorMessage(err)
-  this(errorMessage)
-}
-
-export const getInitials = (name: string): string => {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-}
+  showErrorToast(errorMessage);
+};

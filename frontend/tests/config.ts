@@ -1,19 +1,21 @@
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import dotenv from "dotenv"
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, "../../.env") })
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
-function getEnvVar(name: string): string {
-  const value = process.env[name]
-  if (!value) {
-    throw new Error(`Environment variable ${name} is undefined`)
-  }
-  return value
+const { FIRST_SUPERUSER, FIRST_SUPERUSER_PASSWORD } = process.env;
+
+if (typeof FIRST_SUPERUSER !== "string") {
+  throw new Error("Environment variable FIRST_SUPERUSER is undefined");
 }
 
-export const firstSuperuser = getEnvVar("FIRST_SUPERUSER")
-export const firstSuperuserPassword = getEnvVar("FIRST_SUPERUSER_PASSWORD")
+if (typeof FIRST_SUPERUSER_PASSWORD !== "string") {
+  throw new Error("Environment variable FIRST_SUPERUSER_PASSWORD is undefined");
+}
+
+export const firstSuperuser = FIRST_SUPERUSER as string;
+export const firstSuperuserPassword = FIRST_SUPERUSER_PASSWORD as string;

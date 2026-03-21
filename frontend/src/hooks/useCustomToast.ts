@@ -1,19 +1,25 @@
-import { toast } from "sonner"
+"use client";
+
+import { toaster } from "@/components/ui/toaster";
 
 const useCustomToast = () => {
   const showSuccessToast = (description: string) => {
-    toast.success("Success!", {
+    toaster.create({
+      title: "Success!",
       description,
-    })
-  }
+      type: "success",
+    });
+  };
 
   const showErrorToast = (description: string) => {
-    toast.error("Something went wrong!", {
+    toaster.create({
+      title: "Something went wrong!",
       description,
-    })
-  }
+      type: "error",
+    });
+  };
 
-  return { showSuccessToast, showErrorToast }
-}
+  return { showSuccessToast, showErrorToast };
+};
 
-export default useCustomToast
+export default useCustomToast;

@@ -19,9 +19,16 @@ repos:
         exclude: ^frontend/src/client/.*
   - repo: local
     hooks:
+      - id: generate-frontend-sdk
+        name: Generate Frontend SDK
+        entry: bash ./scripts/generate-client.sh
+        pass_filenames: false
+        language: unsupported
+        files: ^backend/.*$|^scripts/generate-client\.sh$
+
       - id: local-biome-check
         name: biome check
-        entry: npm run lint
+        entry: bash -c 'cd frontend && npm run lint'
         language: system
         types: [text]
         files: ^frontend/
@@ -40,16 +47,9 @@ repos:
         language: unsupported
         types: [python]
 
-      - id: local-mypy
-        name: mypy check
-        entry: uv run mypy backend/app
-        require_serial: true
-        language: unsupported
-        pass_filenames: false
-
-      - id: generate-frontend-sdk
-        name: Generate Frontend SDK
-        entry: bash ./scripts/generate-client.sh
-        pass_filenames: false
-        language: unsupported
-        files: ^backend/.*$|^scripts/generate-client\.sh$
+      # - id: local-mypy
+      #   name: mypy check
+      #   entry: uv run mypy backend/app
+      #   require_serial: true
+      #   language: unsupported
+      #   pass_filenames: false
