@@ -1,19 +1,19 @@
-import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-import emails  # type: ignore
+import emails
 import jwt
+import resend
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
 
 from app.core import security
 from app.core.config import settings
+from app.core.logging import logger_setup
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logger_setup(__name__)
 
 
 @dataclass
@@ -37,21 +37,30 @@ def send_email(
     html_content: str = "",
 ) -> None:
     assert settings.emails_enabled, "no provided configuration for email variables"
-    message = emails.Message(
-        subject=subject,
-        html=html_content,
-        mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
-    )
-    smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
-    if settings.SMTP_TLS:
-        smtp_options["tls"] = True
-    elif settings.SMTP_SSL:
-        smtp_options["ssl"] = True
-    if settings.SMTP_USER:
-        smtp_options["user"] = settings.SMTP_USER
-    if settings.SMTP_PASSWORD:
-        smtp_options["password"] = settings.SMTP_PASSWORD
-    response = message.send(to=email_to, smtp=smtp_options)
+    if settings.RESEND_API_KEY:
+        params: resend.Emails.SendParams = {
+            "from": f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>",
+            "to": email_to,
+            "subject": subject,
+            "html": html_content,
+        }
+        response = resend.Emails.send(params, {})
+    else:
+        message = emails.Message(
+            subject=subject,
+            html=html_content,
+            mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
+        )
+        smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
+        if settings.SMTP_TLS:
+            smtp_options["tls"] = True
+        elif settings.SMTP_SSL:
+            smtp_options["ssl"] = True
+        if settings.SMTP_USER:
+            smtp_options["user"] = settings.SMTP_USER
+        if settings.SMTP_PASSWORD:
+            smtp_options["password"] = settings.SMTP_PASSWORD
+        response = message.send(to=email_to, smtp=smtp_options)
     logger.info(f"send email result: {response}")
 
 
@@ -102,7 +111,7 @@ def generate_new_account_email(
 
 def generate_password_reset_token(email: str) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = now + delta
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(

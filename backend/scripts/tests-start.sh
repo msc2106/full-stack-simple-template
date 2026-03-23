@@ -2,6 +2,10 @@
 set -e
 set -x
 
-python app/tests_pre_start.py
+docker compose down testdb
+docker compose up --wait testdb
+bash scripts/prestart.sh
 
 bash scripts/test.sh "$@"
+
+docker compose down testdb

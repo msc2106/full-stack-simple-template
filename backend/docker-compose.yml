@@ -1,0 +1,17 @@
+
+services:
+  testdb:
+    image: pgvector/pgvector:pg18-trixie
+    restart: no
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testpostgres -d testdb"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=testpassword
+      - POSTGRES_USER=testpostgres
+      - POSTGRES_DB=testdb

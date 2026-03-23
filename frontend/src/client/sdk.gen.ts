@@ -78,7 +78,7 @@ export const loginResetPassword = <ThrowOnError extends boolean = false>(options
  * HTML Content for Password Recovery
  */
 export const loginRecoverPasswordHtmlContent = <ThrowOnError extends boolean = false>(options: Options<LoginRecoverPasswordHtmlContentData, ThrowOnError>) => (options.client ?? client).post<LoginRecoverPasswordHtmlContentResponses, LoginRecoverPasswordHtmlContentErrors, ThrowOnError>({
-    responseType: 'text',
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/password-recovery-html-content/{email}',
     ...options
@@ -247,7 +247,9 @@ export const utilsHealthCheck = <ThrowOnError extends boolean = false>(options?:
 /**
  * Read Items
  *
- * Retrieve items.
+ * Retrieve items:
+ * - Returns all items for superusers.
+ * - Returns users' own items for others
  */
 export const itemsReadItems = <ThrowOnError extends boolean = false>(options?: Options<ItemsReadItemsData, ThrowOnError>) => (options?.client ?? client).get<ItemsReadItemsResponses, ItemsReadItemsErrors, ThrowOnError>({
     responseType: 'json',

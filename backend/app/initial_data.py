@@ -1,23 +1,22 @@
-import logging
+import asyncio as aio
 
-from sqlmodel import Session
+from app.core.db import AsyncSession, engine
+from app.core.logging import logger_setup
+from app.crud.users import init_db
 
-from app.core.db import engine, init_db
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
-def init() -> None:
-    with Session(engine) as session:
-        init_db(session)
+logger = logger_setup(__name__)
 
 
-def main() -> None:
+async def init() -> None:
+    async with AsyncSession(engine) as session:
+        await init_db(session)
+
+
+async def main() -> None:
     logger.info("Creating initial data")
-    init()
+    await init()
     logger.info("Initial data created")
 
 
 if __name__ == "__main__":
-    main()
+    aio.run(main())

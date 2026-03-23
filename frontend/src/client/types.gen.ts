@@ -463,10 +463,8 @@ export type LoginRecoverPasswordHtmlContentResponses = {
     /**
      * Successful Response
      */
-    200: string;
+    200: unknown;
 };
-
-export type LoginRecoverPasswordHtmlContentResponse = LoginRecoverPasswordHtmlContentResponses[keyof LoginRecoverPasswordHtmlContentResponses];
 
 export type UsersReadUsersData = {
     body?: never;
