@@ -11,8 +11,7 @@ import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { FaPlus } from "react-icons/fa";
 
-import { type ItemCreate, ItemsService } from "@/client";
-import type { ApiError } from "@/client/core/ApiError";
+import { type ItemCreate, itemsCreateItem } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
 import { handleError } from "@/utils";
 import {
@@ -45,16 +44,13 @@ const AddItem = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: ItemCreate) =>
-      ItemsService.createItem({ requestBody: data }),
+    mutationFn: (data: ItemCreate) => itemsCreateItem({ body: data }),
     onSuccess: () => {
       showSuccessToast("Item created successfully.");
       reset();
       setIsOpen(false);
     },
-    onError: (err: ApiError) => {
-      handleError(err);
-    },
+    onError: handleError,
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },

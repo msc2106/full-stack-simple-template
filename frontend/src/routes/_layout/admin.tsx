@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { type UserPublic, UsersService } from "@/client";
+import { type UserPublic, usersReadUsers } from "@/client";
 import AddUser from "@/components/Admin/AddUser";
 import { UserActionsMenu } from "@/components/Common/UserActionsMenu";
 import PendingUsers from "@/components/Pending/PendingUsers";
@@ -22,8 +22,12 @@ const PER_PAGE = 5;
 
 function getUsersQueryOptions({ page }: { page: number }) {
   return {
-    queryFn: () =>
-      UsersService.readUsers({ skip: (page - 1) * PER_PAGE, limit: PER_PAGE }),
+    queryFn: async () => {
+      const response = await usersReadUsers({
+        query: { skip: (page - 1) * PER_PAGE, limit: PER_PAGE },
+      });
+      return response.data;
+    },
     queryKey: ["users", { page }],
   };
 }

@@ -4,7 +4,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { FiLock } from "react-icons/fi";
 
-import { type ApiError, LoginService, type NewPassword } from "@/client";
+import { loginResetPassword, type NewPassword } from "@/client";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { isLoggedIn } from "@/hooks/useAuth";
@@ -46,8 +46,8 @@ function ResetPassword() {
   const resetPassword = async (data: NewPassword) => {
     const token = new URLSearchParams(window.location.search).get("token");
     if (!token) return;
-    await LoginService.resetPassword({
-      requestBody: { new_password: data.new_password, token: token },
+    await loginResetPassword({
+      body: { new_password: data.new_password, token: token },
     });
   };
 
@@ -58,9 +58,7 @@ function ResetPassword() {
       reset();
       navigate({ to: "/login" });
     },
-    onError: (err: ApiError) => {
-      handleError(err);
-    },
+    onError: handleError,
   });
 
   const onSubmit: SubmitHandler<NewPasswordForm> = async (data) => {
@@ -98,7 +96,7 @@ function ResetPassword() {
         {...register("confirm_password", confirmPasswordRules(getValues))}
         placeholder="Confirm Password"
       />
-      <Button variant="solid" type="submit">
+      <Button variant="solid" type="submit" loading={mutation.isPending}>
         Reset Password
       </Button>
     </Container>

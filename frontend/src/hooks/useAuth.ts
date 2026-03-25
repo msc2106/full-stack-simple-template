@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import type { AxiosError } from "axios";
 import { useState } from "react";
-
 import {
-  type Body_login_login_access_token as AccessToken,
-  type ApiError,
-  LoginService,
+  type BodyLoginLoginAccessToken as AccessToken,
+  loginLoginAccessToken,
   type UserPublic,
   type UserRegister,
-  UsersService,
+  usersReadUserMe,
+  usersRegisterUser,
 } from "@/client";
 import { handleError } from "@/utils";
 
@@ -20,20 +20,22 @@ const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: user } = useQuery<UserPublic | null, Error>({
+  const { data: user } = useQuery<UserPublic | undefined, Error>({
     queryKey: ["currentUser"],
-    queryFn: UsersService.readUserMe,
+    queryFn: async () => {
+      const res = await usersReadUserMe();
+      return res.data;
+    },
     enabled: isLoggedIn(),
   });
 
   const signUpMutation = useMutation({
-    mutationFn: (data: UserRegister) =>
-      UsersService.registerUser({ requestBody: data }),
+    mutationFn: (data: UserRegister) => usersRegisterUser({ body: data }),
 
     onSuccess: () => {
       navigate({ to: "/login" });
     },
-    onError: (err: ApiError) => {
+    onError: (err: AxiosError) => {
       handleError(err);
     },
     onSettled: () => {
@@ -42,10 +44,14 @@ const useAuth = () => {
   });
 
   const login = async (data: AccessToken) => {
-    const response = await LoginService.loginAccessToken({
-      formData: data,
+    const response = await loginLoginAccessToken({
+      body: data,
     });
-    localStorage.setItem("access_token", response.access_token);
+    const accessToken = response.data?.access_token;
+    if (!accessToken) {
+      throw new Error("No access token received");
+    }
+    localStorage.setItem("access_token", accessToken);
   };
 
   const loginMutation = useMutation({
@@ -53,7 +59,7 @@ const useAuth = () => {
     onSuccess: () => {
       navigate({ to: "/" });
     },
-    onError: (err: ApiError) => {
+    onError: (err: AxiosError) => {
       handleError(err);
     },
   });

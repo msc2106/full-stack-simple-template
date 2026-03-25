@@ -11,7 +11,7 @@ import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { FaExchangeAlt } from "react-icons/fa";
 
-import { type ApiError, type ItemPublic, ItemsService } from "@/client";
+import { type ItemPublic, itemsUpdateItem } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
 import { handleError } from "@/utils";
 import {
@@ -55,15 +55,13 @@ const EditItem = ({ item }: EditItemProps) => {
 
   const mutation = useMutation({
     mutationFn: (data: ItemUpdateForm) =>
-      ItemsService.updateItem({ id: item.id, requestBody: data }),
+      itemsUpdateItem({ path: { id: item.id }, body: data }),
     onSuccess: () => {
       showSuccessToast("Item updated successfully.");
       reset();
       setIsOpen(false);
     },
-    onError: (err: ApiError) => {
-      handleError(err);
-    },
+    onError: handleError,
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },

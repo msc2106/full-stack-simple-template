@@ -13,8 +13,7 @@ import { useState } from "react";
 import { Controller, type SubmitHandler, useForm } from "react-hook-form";
 import { FaExchangeAlt } from "react-icons/fa";
 
-import { type UserPublic, UsersService, type UserUpdate } from "@/client";
-import type { ApiError } from "@/client/core/ApiError";
+import { type UserPublic, type UserUpdate, usersUpdateUser } from "@/client";
 import useCustomToast from "@/hooks/useCustomToast";
 import { emailPattern, handleError } from "@/utils";
 import { Checkbox } from "../ui/checkbox";
@@ -55,15 +54,13 @@ const EditUser = ({ user }: EditUserProps) => {
 
   const mutation = useMutation({
     mutationFn: (data: UserUpdateForm) =>
-      UsersService.updateUser({ userId: user.id, requestBody: data }),
+      usersUpdateUser({ path: { user_id: user.id }, body: data }),
     onSuccess: () => {
       showSuccessToast("User updated successfully.");
       reset();
       setIsOpen(false);
     },
-    onError: (err: ApiError) => {
-      handleError(err);
-    },
+    onError: handleError,
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

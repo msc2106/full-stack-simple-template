@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiTrash2 } from "react-icons/fi";
 
-import { UsersService } from "@/client";
+import { usersDeleteUser } from "@/client";
 import {
   DialogActionTrigger,
   DialogBody,
@@ -27,7 +27,7 @@ const DeleteUser = ({ id }: { id: string }) => {
   } = useForm();
 
   const deleteUser = async (id: string) => {
-    await UsersService.deleteUser({ userId: id });
+    await usersDeleteUser({ path: { user_id: id } });
   };
 
   const mutation = useMutation({
