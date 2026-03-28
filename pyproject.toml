@@ -1,0 +1,19 @@
+[project]
+name = "Template"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+  "app",
+]
+
+[tool.uv.sources]
+app = { workspace = true }
+
+[tool.uv.workspace]
+members = ["backend", "deployment"]
+
+[tool.ty.environment]
+python = ".venv/bin/python"
+
+[tool.ty.src]
+exclude= ["backend/app/alembic"]
